@@ -20,14 +20,13 @@ public class Player : KinematicBody2D,ISerialized
             {"n",name}
         };
     }
-    
+
      public struct PlayerInput
      {
          public Vector2 Velocity;
          public Vector2 CurrentMousePosition;
      }
     private PlayerInput Player1;
-
     [Remote]
     public void GetPlayerInput(Vector2 velocity,Vector2 currentMousePosition)
     {
@@ -36,9 +35,40 @@ public class Player : KinematicBody2D,ISerialized
         Player1.CurrentMousePosition = currentMousePosition;
     }
 
+    private Projectile projectile;
+
+    public override void _Ready()
+    {
+        projectile = GetNode<Projectile>("Projectile");
+    }
+    public void TrowBall()
+    {
+        projectile.velocity.x +=1;
+    }
+    public void GetInput()
+    {
+        Player1.Velocity = new Vector2();
+        
+        if (Input.IsActionPressed("ui_right"))
+            Player1.Velocity.x += 1;
+
+        if (Input.IsActionPressed("ui_left"))
+            Player1.Velocity.x -= 1;
+
+        if (Input.IsActionPressed("ui_down"))
+            Player1.Velocity.y += 1;
+
+        if (Input.IsActionPressed("ui_up"))
+            Player1.Velocity.y -= 1;
+
+        if (Input.IsActionPressed("Left_click"))
+            TrowBall();
+    }
     public override void _PhysicsProcess(float delta)
     {
+        Player1.CurrentMousePosition = GetViewport().GetMousePosition();
         LookAt(Player1.CurrentMousePosition);
+        GetInput();
         MoveAndCollide(Player1.Velocity*delta*speed);
     }
 }

@@ -18,4 +18,13 @@ public class Projectile : KinematicBody2D,ISerialized
             {"n",name}
         };
     }
+
+    public Vector2 velocity;
+    public int speed = 150;
+
+        public override void _PhysicsProcess(float delta)
+    {
+        MoveAndCollide(velocity*delta*speed);
+    }
+
 }
