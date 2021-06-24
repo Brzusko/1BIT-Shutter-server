@@ -2,6 +2,7 @@ using Godot;
 using Godot.Collections;
 using System;
 using bit_shuter_server.Autoload.Structs;
+using bit_shuter_server.globals.enums;
 
 public class Network : Node
 {
@@ -39,11 +40,15 @@ public class Network : Node
 		clients.SetClientCredentials(credentials, id);
 		StartClientClockSyncing(id);
 	}
-
+	
 	[Remote]
 	public void ClientClockSyncFinished() {
 		var clients = GetNode<Clients>("/root/Clients");
+		var id = GetTree().GetRpcSenderId();
+		clients.ClientFinishedClockSync(id);
+		RpcId(id, "ChangeUIScene", PlayerUIScenes.Lobby.ToString());		
 	}
+
 
 #region utils
 	public void StartClientClockSyncing(int id) {
