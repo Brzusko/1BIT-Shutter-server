@@ -39,11 +39,12 @@ public class Player : KinematicBody2D,ISerialized
 
     public override void _Ready()
     {
-        projectile = GetNode<Projectile>("Projectile");
+        projectile = GetNode<Projectile>("../Projectile");
     }
     public void TrowBall()
     {
-        projectile.velocity.x +=1;
+        projectile.LookAt(GetViewport().GetMousePosition());
+        projectile.velocity = Vector2.Up;
     }
     public void GetInput()
     {
@@ -68,6 +69,7 @@ public class Player : KinematicBody2D,ISerialized
     {
         Player1.CurrentMousePosition = GetViewport().GetMousePosition();
         LookAt(Player1.CurrentMousePosition);
+        GD.Print(Player1.CurrentMousePosition);
         GetInput();
         MoveAndCollide(Player1.Velocity*delta*speed);
     }
