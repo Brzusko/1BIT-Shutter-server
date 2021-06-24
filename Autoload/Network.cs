@@ -6,6 +6,17 @@ using bit_shuter_server.globals.enums;
 
 public class Network : Node
 {
+	[Signal]
+	public delegate void ClientJoinedLobby(Dictionary<string, object> client);
+	[Signal]
+	public delegate void ClientDisconnectedFromLobby(Dictionary<string, object> client);
+	[Signal]
+	public delegate void ClientJoinedToServer(Dictionary<string, object> client);
+	[Signal]
+	public delegate void ClientDisconnectedFromServer(Dictionary<string, object> client);
+
+	[Signal]
+	public delegate void ClientChangeReadyState();
 	private static int _port = 7171;
 	private WebSocketServer _network_peer = new WebSocketServer();
 
@@ -25,7 +36,11 @@ public class Network : Node
 
 	public void OnClientDisconnect(int id) {
 		var clients = GetNode<Clients>("/root/Clients");
+		var disconnectedClient = clients.GetClientByID(id);
 		clients.DestroyClientOnDisconnect(id);
+
+		if(disconnectedClient.State == Client.ClientState.LOBBY_NOT_READY || disconnectedClient.State == Client.ClientState.LOBBY_READY)
+			EmitSignal(nameof(ClientDisconnectedFromLobby), disconnectedClient.AsGDDict);
 		GD.Print($"Client disconnected with ${id}");
 	}
 
@@ -38,6 +53,7 @@ public class Network : Node
 			ClientName = (string)creds["ClientName"]
 		};
 		clients.SetClientCredentials(credentials, id);
+		GD.Print("Recived Credentials");
 		StartClientClockSyncing(id);
 	}
 	
@@ -49,10 +65,26 @@ public class Network : Node
 		RpcId(id, "ChangeUIScene", PlayerUIScenes.Lobby.ToString());		
 	}
 
+	[Remote]
+	public void ClientLoadedLobby() {
+		var clients = GetNode<Clients>("/root/Clients");
+		EmitSignal("ClientJoinedLobby", clients.GetClientByID(GetTree().GetRpcSenderId()).AsGDDict);
+	}
+
+	[Remote]
+	public void ReciveReadyState(bool state) {
+		var clients = GetNode<Clients>("/root/Clients");
+		clients.ChangePlayerReadyState(GetTree().GetRpcSenderId(), state);
+		EmitSignal(nameof(ClientChangeReadyState));
+	}
 
 #region utils
-	public void StartClientClockSyncing(int id) {
-		RpcId(id, "StartClockSync");
+	public void StartClientClockSyncing(int id) => RpcId(id, "StartClockSync");
+
+	public void SendLobbyState(System.Collections.Generic.IList<Client> clientsToSend, Dictionary<string, object> lobbyState) {
+		foreach(var client in clientsToSend) {
+			RpcId(client.id, "ReciveLobbyState", lobbyState);
+		}
 	}
 
 #endregion
