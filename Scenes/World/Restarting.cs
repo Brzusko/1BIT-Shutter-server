@@ -30,7 +30,13 @@ public class Restarting : Node, IState
     }
 
     public void Tick(float delta) {
-        _network.RequestUIChange(PlayerUIScenes Lobby, int id);
+
+        foreach (var client in _clients)
+        {
+            
+        }
+        //_network.RequestUIChange(PlayerUIScenes.Lobby,id);
+
         EndTransition(_nextState);
     }
 }

@@ -89,3 +89,5 @@ script = ExtResource( 7 )
 
 [node name="Restarting" type="Node" parent="StateMachine"]
 script = ExtResource( 5 )
+_players = NodePath("../../Players")
+_projectiles = NodePath("../../Projectiles")
