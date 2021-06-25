@@ -66,5 +66,13 @@ public class Clients : Node
         client.State = state ? Client.ClientState.LOBBY_READY : Client.ClientState.LOBBY_NOT_READY;
         _clients[id] = client;
     }
+
+    public void ClientNotReady(int id)
+    {
+        if (!_clients.ContainsKey(id)) return ;
+        var client = _clients[id];
+        client.State = Client.ClientState.LOBBY_NOT_READY;
+        _clients[id] = client;
+    }
     public Client GetClientByID(int id) => _clients[id];
 }

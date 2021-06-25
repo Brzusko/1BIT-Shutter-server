@@ -90,7 +90,8 @@ public class WaitingForConnections : Node, IState
         }
 
         if (_timerExecutionTimes <= 0) {
-            EndTransition(nameof(LoadingGame));
+            //EndTransition(nameof(LoadingGame));
+            EndTransition(nameof(Restarting));
             return;
         }
     }
