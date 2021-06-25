@@ -38,11 +38,14 @@ public class Player : KinematicBody2D,ISerialized
     public LifeStatus Status;
 
     [Remote]
-    public void GetPlayerInput(Vector2 velocity,Vector2 currentMousePosition)
+    public void GetPlayerInput(Vector2 velocity,Vector2 currentMousePosition,Boolean click_Left)
     {
         _Player.Velocity = new Vector2();
         _Player.Velocity = velocity;
         _Player.CurrentMousePosition = currentMousePosition;
+        
+        if(click_Left == true)
+            TrowBall();
     }
 
     public override void _Ready()
@@ -62,36 +65,14 @@ public class Player : KinematicBody2D,ISerialized
         _projectile.QueueFree();
         this.QueueFree();
     }
-    private void GetInput()
-    {
-        _Player.Velocity = new Vector2();
-        
-        if (Input.IsActionPressed("ui_right"))
-            _Player.Velocity.x += 1;
-
-        if (Input.IsActionPressed("ui_left"))
-            _Player.Velocity.x -= 1;
-
-        if (Input.IsActionPressed("ui_down"))
-            _Player.Velocity.y += 1;
-
-        if (Input.IsActionPressed("ui_up"))
-            _Player.Velocity.y -= 1;
-
-        if (Input.IsActionPressed("Left_click") && _projectile.throwed == false)
-            TrowBall();
-    }
     public override void _PhysicsProcess(float delta)
     {
         if(Status == LifeStatus.Alive)
         {
-            _Player.CurrentMousePosition = GetViewport().GetMousePosition();
             LookAt(_Player.CurrentMousePosition);
 
             if(_projectile.throwed == false)
                 _projectile.GlobalPosition = _hand.GlobalPosition;
-
-            GetInput();
             MoveAndCollide(_Player.Velocity*delta*speed);
         }
         else if(Status == LifeStatus.Dead)
