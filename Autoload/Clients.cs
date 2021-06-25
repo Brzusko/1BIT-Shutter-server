@@ -53,7 +53,6 @@ public class Clients : Node
         var client = _clients[id];
         client.State = Client.ClientState.LOBBY_NOT_READY;
         _clients[id] = client;
-        GD.Print(ClientsInLobby.Count);
     }
     public void DestroyClientOnDisconnect(int id) {
         if (!_clients.ContainsKey(id)) return;
