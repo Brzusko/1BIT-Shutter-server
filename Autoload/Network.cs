@@ -80,6 +80,8 @@ public class Network : Node
 
 #region utils
 	public void StartClientClockSyncing(int id) => RpcId(id, "StartClockSync");
+	
+	public void RequestUIChange(PlayerUIScenes uiScene, int id) => RpcId(id, "ChangeUIScene", uiScene.ToString());
 
 	public void SendLobbyState(System.Collections.Generic.IList<Client> clientsToSend, Dictionary<string, object> lobbyState) {
 		foreach(var client in clientsToSend) {
