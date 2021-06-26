@@ -77,15 +77,15 @@ public class Network : Node
 
 #region utils
 	public void StartClientClockSyncing(int id) => RpcId(id, "StartClockSync");
-	
 	public void RequestUIChange(PlayerUIScenes uiScene, int id) => RpcId(id, "ChangeUIScene", uiScene.ToString());
-
+	public void RequestUIChangeForAllPeers(PlayerUIScenes uiScene) => Rpc("ChangeUIScene", uiScene.ToString());
+	public void RequestGameSceneChange(PlayerGameScenes gameScene, int id) => RpcId(id, "ChangeGameScene", gameScene.ToString());
+	public void RequestGameSceneChangeForAllPeers(PlayerGameScenes gameScene, Dictionary<string, object> sceneState) => Rpc("ChangeGameScene", gameScene.ToString(), sceneState);
 	public void SendLobbyState(System.Collections.Generic.IList<Client> clientsToSend, Dictionary<string, object> lobbyState) {
 		foreach(var client in clientsToSend) {
 			RpcId(client.id, "ReciveLobbyState", lobbyState);
 		}
 	}
-
 	public void DisconnectPlayer(int id) {
 		var clients = GetNode<Clients>("/root/Clients");
 		var disconnectedClient = clients.GetClientByID(id);
@@ -95,7 +95,6 @@ public class Network : Node
 			if(disconnectedClient.State == Client.ClientState.LOBBY_NOT_READY || disconnectedClient.State == Client.ClientState.LOBBY_READY)
 				EmitSignal(nameof(ClientDisconnectedFromLobby), disconnectedClient.AsGDDict);
 		}
-
 		GD.Print($"Client disconnected with ${id}");
 	}
 

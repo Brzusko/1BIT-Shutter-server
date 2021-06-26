@@ -21,6 +21,9 @@ public class Clients : Node
         }
     }
 
+    public bool CanStartSyncing {
+        get => _clients.Where(client => client.Value.State == Client.ClientState.LOADED_WORLD).ToArray().Length == _clients.Count;
+    }
     public bool CanStartGame {
         get => (_clients.Where(client => client.Value.State == Client.ClientState.LOBBY_READY).ToArray().Length == _clients.Count) && _clients.Count >= 2;
     }
@@ -56,7 +59,6 @@ public class Clients : Node
     }
     public void DestroyClientOnDisconnect(int id) {
         if (!_clients.ContainsKey(id)) return;
-        // Niszczenie gracza w świecie
         _clients.Remove(id);
     }
 
@@ -64,6 +66,13 @@ public class Clients : Node
         if (!_clients.ContainsKey(id)) return;
         var client = _clients[id];
         client.State = state ? Client.ClientState.LOBBY_READY : Client.ClientState.LOBBY_NOT_READY;
+        _clients[id] = client;
+    }
+
+    public void ClientStartsLoading(int id) {
+        if (!_clients.ContainsKey(id)) return;
+        var client = _clients[id];
+        client.State = Client.ClientState.JOINING_WORLD;
         _clients[id] = client;
     }
     public Client GetClientByID(int id) => _clients.ContainsKey(id) ? _clients[id] : new Client{ id = -1 };

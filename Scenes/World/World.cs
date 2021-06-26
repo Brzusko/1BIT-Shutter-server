@@ -21,7 +21,7 @@ public class World : Node2D
     public void CreatePlayer(Vector2 startingPos, string name, bool playerLook) {
         _players.CreatePlayer(startingPos, name, playerLook);
     }
-    public Godot.Collections.Dictionary<string,object> SendGameWorldState()
+    public Godot.Collections.Dictionary<string,object> WorldState()
     {
         return new  Godot.Collections.Dictionary<string,object>(){
             { "P", _players.GetSerlizedPlayers() },
