@@ -19,6 +19,7 @@ public class Network : Node
 	public delegate void ClientChangeReadyState();
 	private static int _port = 7171;
 	private WebSocketServer _network_peer = new WebSocketServer();
+	private readonly int _maxClientCount = 2;
 
 	private void CreateServer() {
 		var error = _network_peer.Listen(7171, null, true);
@@ -30,19 +31,15 @@ public class Network : Node
 
 	public void OnClientConnect(int id) {
 		var clients = GetNode<Clients>("/root/Clients");
+		if(clients.ClientsCount >= _maxClientCount) {
+			DisconnectPlayer(id);
+			return;
+		}
 		clients.RegisterClient(id);
 		GD.Print($"Client connected with id ${id}");
 	}
 
-	public void OnClientDisconnect(int id) {
-		var clients = GetNode<Clients>("/root/Clients");
-		var disconnectedClient = clients.GetClientByID(id);
-		clients.DestroyClientOnDisconnect(id);
-
-		if(disconnectedClient.State == Client.ClientState.LOBBY_NOT_READY || disconnectedClient.State == Client.ClientState.LOBBY_READY)
-			EmitSignal(nameof(ClientDisconnectedFromLobby), disconnectedClient.AsGDDict);
-		GD.Print($"Client disconnected with ${id}");
-	}
+	public void OnClientDisconnect(int id) => DisconnectPlayer(id);
 
 #region rpcs
 	[Remote]
@@ -87,6 +84,19 @@ public class Network : Node
 		foreach(var client in clientsToSend) {
 			RpcId(client.id, "ReciveLobbyState", lobbyState);
 		}
+	}
+
+	public void DisconnectPlayer(int id) {
+		var clients = GetNode<Clients>("/root/Clients");
+		var disconnectedClient = clients.GetClientByID(id);
+
+		if(disconnectedClient.id != -1) {
+			clients.DestroyClientOnDisconnect(id);
+			if(disconnectedClient.State == Client.ClientState.LOBBY_NOT_READY || disconnectedClient.State == Client.ClientState.LOBBY_READY)
+				EmitSignal(nameof(ClientDisconnectedFromLobby), disconnectedClient.AsGDDict);
+		}
+
+		GD.Print($"Client disconnected with ${id}");
 	}
 
 #endregion

@@ -3,7 +3,7 @@ using System;
 using Godot.Collections;
 using bit_shuter_server.Scenes.World;
 
-public class Projectile : KinematicBody2D,ISerialized
+public class Projectile : KinematicBody2D, ISerialized
 {
     public Vector2 position {get;set;}
     public int rotation {get;set;}
@@ -26,10 +26,6 @@ public class Projectile : KinematicBody2D,ISerialized
     const int weight = 25;
     private Player player;
 
-    public override void _Ready()
-    {
-        player = GetNode<Player>("../../Players/Player");
-    }
     public override void _PhysicsProcess(float delta)
     {
 
@@ -44,7 +40,7 @@ public class Projectile : KinematicBody2D,ISerialized
             else    
                 _actualSpeed=0;
         }
-        GD.Print(_actualSpeed);
+
     }
 
     public void Throwed()

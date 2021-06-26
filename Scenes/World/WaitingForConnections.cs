@@ -8,8 +8,16 @@ public class WaitingForConnections : Node, IState
     private string _nextState = nameof(Simulating);
     private Clients _clients;
     private Network _network;
+
+    [Export]
+    private NodePath _worldPath;
+    private World _world;
+    [Export]
+    private NodePath _spawnPointsPath;
+    private SpawnPoints _spawnPoints;
     
-    private int _timerExecutionTimes = 300; // that means 16 sec to start a game when everyone is ready
+    private static int _executionCount = 3;
+    private int _timerExecutionTimes = _executionCount; // that means 16 sec to start a game when everyone is ready
     private bool _isTimerExecuted = false;
 
     private Timer _timer;
@@ -25,11 +33,17 @@ public class WaitingForConnections : Node, IState
         _isTimerExecuted = true;
     }
 
-    private void ResetTimer() {
-        _timerExecutionTimes = 15;
+    private void ResetTimer(bool sendToClient = true) {
+        _timerExecutionTimes = _executionCount;
         _isTimerExecuted = false;
         _timer.Stop();
-        _network.SendLobbyState(_clients.ClientsInLobby, GetLobbyState());
+        if (sendToClient) _network.SendLobbyState(_clients.ClientsInLobby, GetLobbyState());
+    }
+
+    private void DestroyTimer() {
+        ResetTimer();
+        _timer.Disconnect("timeout", this, nameof(Timeout));
+        _timer.Free();
     }
 
     private void ConnectEvents() {
@@ -54,9 +68,29 @@ public class WaitingForConnections : Node, IState
         state.Add("c", clientsGDArray);
         return state;
     }
+
+    private void SpawnPlayers() {
+        var clients = _clients.ClientsInLobby;
+        var iterator = 0;
+        Vector2 startingPos = Vector2.Zero;
+        bool playerLook = false;
+
+        foreach (var client in clients) {
+            var modulo = iterator % 2;
+            if (modulo == 0) {
+                playerLook = false;
+                startingPos = _spawnPoints.FirstPlayerSpawnPoint;
+            } else {
+                playerLook = true;
+                startingPos = _spawnPoints.SecondPlayerSpawnPoint;
+            }
+            _world.CreatePlayer(startingPos, client.ClientName, playerLook);
+            iterator++;
+        }
+    }
     public void Timeout() {
         _timerExecutionTimes--;
-        _network.SendLobbyState(_clients.ClientsInLobby, GetLobbyState());
+        if (_network != null) _network.SendLobbyState(_clients.ClientsInLobby, GetLobbyState());
         // here send time left to start
     }
 
@@ -66,12 +100,16 @@ public class WaitingForConnections : Node, IState
     public void OnClientDisconnectedFromLobby(Dictionary<string, object> client) => _network.SendLobbyState(_clients.ClientsInLobby, GetLobbyState());
     public void BeginTransition() {
         GD.Print("Begin waiting for connections");
+        CreateTimer();
         _clients = GetNode<Clients>("/root/Clients");
         _network = GetNode<Network>("/root/Network");
+        _world = GetNode<World>(_worldPath);
+        _spawnPoints = GetNode<SpawnPoints>(_spawnPointsPath);
         ConnectEvents();
     }
 
     public void EndTransition(string name) {
+        SpawnPlayers();
         DicsonnectEvents();
         _clients = null;
         _network = null;
@@ -83,20 +121,13 @@ public class WaitingForConnections : Node, IState
             StartTimer();
             return;
         }
-        
         if (!_clients.CanStartGame && _isTimerExecuted) {
             ResetTimer();
             return;
         }
-
         if (_timerExecutionTimes <= 0) {
             EndTransition(nameof(LoadingGame));
             return;
         }
-    }
-
-    public override void _Ready()
-    {
-        CreateTimer();
     }
 }

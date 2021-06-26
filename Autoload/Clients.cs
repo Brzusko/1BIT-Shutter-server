@@ -22,7 +22,7 @@ public class Clients : Node
     }
 
     public bool CanStartGame {
-        get => (_clients.Where(client => client.Value.State == Client.ClientState.LOBBY_READY).ToArray().Length == _clients.Count) && _clients.Count >= 1;
+        get => (_clients.Where(client => client.Value.State == Client.ClientState.LOBBY_READY).ToArray().Length == _clients.Count) && _clients.Count >= 2;
     }
 
     public int ClientsCount {
@@ -66,5 +66,5 @@ public class Clients : Node
         client.State = state ? Client.ClientState.LOBBY_READY : Client.ClientState.LOBBY_NOT_READY;
         _clients[id] = client;
     }
-    public Client GetClientByID(int id) => _clients[id];
+    public Client GetClientByID(int id) => _clients.ContainsKey(id) ? _clients[id] : new Client{ id = -1 };
 }
