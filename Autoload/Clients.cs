@@ -20,6 +20,12 @@ public class Clients : Node
             return clients.ToList<Client>();
         }
     }
+    public IList<Client> ClientsInGame {
+        get {
+            var clients = _clients.Where(client => client.Value.State == Client.ClientState.SYNCING ).Select(client => client.Value);
+            return clients.ToList<Client>();
+        }
+    }
 
     public bool CanStartGame {
         get => (_clients.Where(client => client.Value.State == Client.ClientState.LOBBY_READY).ToArray().Length == _clients.Count) && _clients.Count >= 1;
@@ -49,10 +55,11 @@ public class Clients : Node
     }
 
     public void ClientFinishedClockSync(int id) {
-        if (!_clients.ContainsKey(id)) return ;
-        var client = _clients[id];
-        client.State = Client.ClientState.LOBBY_NOT_READY;
-        _clients[id] = client;
+        ClientNotReady(id);
+        // if (!_clients.ContainsKey(id)) return ;
+        // var client = _clients[id];
+        // client.State = Client.ClientState.LOBBY_NOT_READY;
+        // _clients[id] = client;
     }
     public void DestroyClientOnDisconnect(int id) {
         if (!_clients.ContainsKey(id)) return;
