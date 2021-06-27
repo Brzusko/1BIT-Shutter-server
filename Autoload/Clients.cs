@@ -25,7 +25,7 @@ public class Clients : Node
         get => _clients.Where(client => client.Value.State == Client.ClientState.LOADED_WORLD).ToArray().Length == _clients.Count;
     }
     public bool CanStartGame {
-        get => (_clients.Where(client => client.Value.State == Client.ClientState.LOBBY_READY).ToArray().Length == _clients.Count) && _clients.Count >= 2;
+        get => (_clients.Where(client => client.Value.State == Client.ClientState.LOBBY_READY).ToArray().Length == _clients.Count) && _clients.Count >= 1;
     }
 
     public int ClientsCount {

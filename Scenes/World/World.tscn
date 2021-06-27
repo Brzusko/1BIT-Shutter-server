@@ -1,7 +1,7 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://Scenes/World/World.cs" type="Script" id=1]
-[ext_resource path="res://icon.png" type="Texture" id=2]
+[ext_resource path="res://Scenes/World/Map.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Scenes/World/SpawnPoints.cs" type="Script" id=3]
 [ext_resource path="res://Scenes/World/StateMachine.cs" type="Script" id=4]
 [ext_resource path="res://Scenes/World/Restarting.cs" type="Script" id=5]
@@ -11,32 +11,6 @@
 [ext_resource path="res://Scenes/World/Players.cs" type="Script" id=9]
 [ext_resource path="res://Scenes/World/Projectiles.cs" type="Script" id=10]
 [ext_resource path="res://Scenes/Player/Player.tscn" type="PackedScene" id=11]
-
-[sub_resource type="ConvexPolygonShape2D" id=1]
-points = PoolVector2Array( 64, 64, 0, 64, 0, 0, 64, 0 )
-
-[sub_resource type="TileSet" id=2]
-0/name = "icon.png 0"
-0/texture = ExtResource( 2 )
-0/tex_offset = Vector2( 0, 0 )
-0/modulate = Color( 1, 1, 1, 1 )
-0/region = Rect2( 0, 0, 64, 64 )
-0/tile_mode = 0
-0/occluder_offset = Vector2( 0, 0 )
-0/navigation_offset = Vector2( 0, 0 )
-0/shape_offset = Vector2( 0, 0 )
-0/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
-0/shape = SubResource( 1 )
-0/shape_one_way = false
-0/shape_one_way_margin = 1.0
-0/shapes = [ {
-"autotile_coord": Vector2( 0, 0 ),
-"one_way": false,
-"one_way_margin": 1.0,
-"shape": SubResource( 1 ),
-"shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
-} ]
-0/z_index = 0
 
 [node name="World" type="Node2D"]
 script = ExtResource( 1 )
@@ -48,10 +22,7 @@ _playerScene = ExtResource( 11 )
 [node name="Projectiles" type="Node2D" parent="."]
 script = ExtResource( 10 )
 
-[node name="Map" type="TileMap" parent="."]
-tile_set = SubResource( 2 )
-format = 1
-tile_data = PoolIntArray( -524298, 0, 0, -524297, 0, 0, -524296, 0, 0, -524295, 0, 0, -524294, 0, 0, -524293, 0, 0, -524292, 0, 0, -524291, 0, 0, -524290, 0, 0, -524289, 0, 0, -589824, 0, 0, -589823, 0, 0, -589822, 0, 0, -589821, 0, 0, -589820, 0, 0, -589819, 0, 0, -589818, 0, 0, -589817, 0, 0, -589816, 0, 0, -589815, 0, 0, -458762, 0, 0, -524279, 0, 0, -393226, 0, 0, -393224, 0, 0, -393223, 0, 0, -458746, 0, 0, -458745, 0, 0, -458743, 0, 0, -327690, 0, 0, -327688, 0, 0, -327687, 0, 0, -393210, 0, 0, -393209, 0, 0, -393207, 0, 0, -262154, 0, 0, -327671, 0, 0, -196618, 0, 0, -196610, 0, 0, -196609, 0, 0, -262144, 0, 0, -262143, 0, 0, -262135, 0, 0, -131082, 0, 0, -131079, 0, 0, -131078, 0, 0, -131074, 0, 0, -131073, 0, 0, -196608, 0, 0, -196607, 0, 0, -196603, 0, 0, -196602, 0, 0, -196599, 0, 0, -65546, 0, 0, -131072, 0, 0, -131071, 0, 0, -131063, 0, 0, -10, 0, 0, -65536, 0, 0, -65535, 0, 0, -65527, 0, 0, 65526, 0, 0, 9, 0, 0, 131062, 0, 0, 65545, 0, 0, 196598, 0, 0, 196602, 0, 0, 131078, 0, 0, 131081, 0, 0, 262134, 0, 0, 196617, 0, 0, 327670, 0, 0, 327676, 0, 0, 327677, 0, 0, 327678, 0, 0, 327679, 0, 0, 262144, 0, 0, 262145, 0, 0, 262146, 0, 0, 262147, 0, 0, 262153, 0, 0, 393206, 0, 0, 393208, 0, 0, 393209, 0, 0, 327686, 0, 0, 327687, 0, 0, 327689, 0, 0, 458742, 0, 0, 458744, 0, 0, 458745, 0, 0, 393222, 0, 0, 393223, 0, 0, 393225, 0, 0, 524278, 0, 0, 458761, 0, 0, 589814, 0, 0, 589815, 0, 0, 589816, 0, 0, 589817, 0, 0, 589818, 0, 0, 589819, 0, 0, 589820, 0, 0, 589821, 0, 0, 589822, 0, 0, 589823, 0, 0, 524288, 0, 0, 524289, 0, 0, 524290, 0, 0, 524291, 0, 0, 524292, 0, 0, 524293, 0, 0, 524294, 0, 0, 524295, 0, 0, 524296, 0, 0, 524297, 0, 0 )
+[node name="Map" parent="." instance=ExtResource( 2 )]
 
 [node name="SpawnPoints" type="Node2D" parent="."]
 script = ExtResource( 3 )
@@ -87,6 +58,7 @@ _spawnPointsPath = NodePath("../../SpawnPoints")
 
 [node name="LoadingGame" type="Node" parent="StateMachine"]
 script = ExtResource( 8 )
+_worldPath = NodePath("../..")
 
 [node name="Simulating" type="Node" parent="StateMachine"]
 script = ExtResource( 7 )
