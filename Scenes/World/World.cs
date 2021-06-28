@@ -21,6 +21,11 @@ public class World : Node2D
     public void CreatePlayer(Vector2 startingPos, string name, bool playerLook) {
         _players.CreatePlayer(startingPos, name, playerLook);
     }
+
+    public void ProcessGame(float delta) {
+        _players.ProcessPlayers(delta);
+        Rpc("ReciveGameState", WorldState());
+    }
     public Godot.Collections.Dictionary<string,object> WorldState()
     {
         return new  Godot.Collections.Dictionary<string,object>(){

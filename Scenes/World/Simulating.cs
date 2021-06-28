@@ -14,6 +14,7 @@ public class Simulating : Node, IState
         GD.Print("Starting game");
         _clients = GetNode<Clients>("/root/Clients");
         _network = GetNode<Network>("/root/Network");
+        _world = GetNode<World>(_worldPath);
 
         foreach(var client in _clients.LoadedClients) 
             _clients.ClientReadyToSync(client.id);
@@ -27,6 +28,6 @@ public class Simulating : Node, IState
     }
 
     public void Tick(float delta) {
-
+        _world.ProcessGame(delta);
     }
 }

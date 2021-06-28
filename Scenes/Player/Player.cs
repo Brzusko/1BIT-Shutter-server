@@ -55,8 +55,11 @@ public class Player : KinematicBody2D, ISerialized
         _projectile.Throwed();
     }
 
+    public void ProcessMovement(float delta) {
+        MoveAndCollide(_Player.Velocity * delta * speed);
+    }
     [Remote]
-    public void GetPlayerInput(Vector2 velocity,Vector2 currentMousePosition,Boolean click_Left)
+    public void GetPlayerInput(Vector2 velocity,Vector2 currentMousePosition, Boolean click_Left)
     {
         _Player.Velocity = new Vector2();
         _Player.Velocity = velocity;

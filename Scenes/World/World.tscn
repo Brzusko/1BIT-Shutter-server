@@ -62,6 +62,7 @@ _worldPath = NodePath("../..")
 
 [node name="Simulating" type="Node" parent="StateMachine"]
 script = ExtResource( 7 )
+_worldPath = NodePath("../..")
 
 [node name="Restarting" type="Node" parent="StateMachine"]
 script = ExtResource( 5 )

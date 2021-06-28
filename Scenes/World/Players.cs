@@ -25,6 +25,10 @@ public class Players : Node2D
 		_playersInGame.Remove(player);
 	}
 
+	public void ProcessPlayers(float delta) {
+		foreach(var player in _playersInGame)
+			player.ProcessMovement(delta);
+	}
 	public Player GetPlayerByName(string playerName) => _playersInGame.Find(player => player.Name == playerName);
 
 	public Godot.Collections.Array<Godot.Collections.Dictionary<string,object>> GetSerlizedPlayers(){
