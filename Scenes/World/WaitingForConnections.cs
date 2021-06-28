@@ -86,6 +86,7 @@ public class WaitingForConnections : Node, IState
 			}
 			_world.CreatePlayer(startingPos, client.ClientName, playerLook);
 			iterator++;
+			GD.Print(startingPos);
 		}
 	}
 	public void Timeout() {

@@ -5,15 +5,15 @@ using bit_shuter_server.Scenes.World;
 
 public class Player : KinematicBody2D, ISerialized
 {
-    public Vector2 position {get;set;}
-    public int rotation {get;set;}
-    public Boolean look {get;set;}
+    public Vector2 EntityPosition {get => GlobalPosition; }
+    public float EntityRotation {get => Rotation; }
+    public Boolean EntityLook {get;set;}
 
     public Dictionary<string,object> ToGodotDict(){
         return new Dictionary<string,object>(){
-            {"p", position},
-            {"r", rotation},
-            {"l", look},
+            {"p", EntityPosition},
+            {"r", EntityRotation},
+            {"l", EntityLook},
             {"n", Name }
         };
     }
@@ -43,11 +43,11 @@ public class Player : KinematicBody2D, ISerialized
         Status = LifeStatus.Alive;
     }
 
-    public void Setup(Vector2 position, string name, bool look) {
+    public void Setup(Vector2 _position, string name, bool look) {
         Status = LifeStatus.Alive;
-        GlobalPosition = position;
+        GlobalPosition = _position;
         this.Name = name;
-        this.look = look;
+        this.EntityLook = look;
     }
     private void TrowBall()
     {

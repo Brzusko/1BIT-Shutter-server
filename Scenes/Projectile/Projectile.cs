@@ -5,18 +5,18 @@ using bit_shuter_server.Scenes.World;
 
 public class Projectile : KinematicBody2D, ISerialized
 {
-    public Vector2 position {get;set;}
-    public int rotation {get;set;}
-    public Boolean look {get;set;}
-    public string name {get;set;}
+    public Vector2 EntityPosition {get => GlobalPosition; }
+    public float EntityRotation {get => Rotation; }
+    public Boolean EntityLook {get;set;}
+    public string name { get; set; }
     public Boolean throwed;
 
     public Dictionary<string,object> ToGodotDict(){
         return new Dictionary<string,object>(){
-            {"p",position},
-            {"r",rotation},
-            {"l",look},
-            {"n",name}
+            {"p", EntityPosition},
+            {"r", EntityRotation},
+            {"l", EntityLook},
+            {"n", Name}
         };
     }
 
