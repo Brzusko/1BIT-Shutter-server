@@ -19,6 +19,7 @@ public class Network : Node
 	public delegate void ClientChangeReadyState();
 	private static int _port = 7171;
 	private WebSocketServer _network_peer = new WebSocketServer();
+	private readonly int _maxClientCount = 2;
 
 	private void CreateServer() {
 		var error = _network_peer.Listen(7171, null, true);
@@ -30,19 +31,15 @@ public class Network : Node
 
 	public void OnClientConnect(int id) {
 		var clients = GetNode<Clients>("/root/Clients");
+		if(clients.ClientsCount >= _maxClientCount) {
+			DisconnectPlayer(id);
+			return;
+		}
 		clients.RegisterClient(id);
 		GD.Print($"Client connected with id ${id}");
 	}
 
-	public void OnClientDisconnect(int id) {
-		var clients = GetNode<Clients>("/root/Clients");
-		var disconnectedClient = clients.GetClientByID(id);
-		clients.DestroyClientOnDisconnect(id);
-
-		if(disconnectedClient.State == Client.ClientState.LOBBY_NOT_READY || disconnectedClient.State == Client.ClientState.LOBBY_READY)
-			EmitSignal(nameof(ClientDisconnectedFromLobby), disconnectedClient.AsGDDict);
-		GD.Print($"Client disconnected with ${id}");
-	}
+	public void OnClientDisconnect(int id) => DisconnectPlayer(id);
 
 #region rpcs
 	[Remote]
@@ -80,13 +77,25 @@ public class Network : Node
 
 #region utils
 	public void StartClientClockSyncing(int id) => RpcId(id, "StartClockSync");
-	
 	public void RequestUIChange(PlayerUIScenes uiScene, int id) => RpcId(id, "ChangeUIScene", uiScene.ToString());
-
+	public void RequestUIChangeForAllPeers(PlayerUIScenes uiScene) => Rpc("ChangeUIScene", uiScene.ToString());
+	public void RequestGameSceneChange(PlayerGameScenes gameScene, int id) => RpcId(id, "ChangeGameScene", gameScene.ToString());
+	public void RequestGameSceneChangeForAllPeers(PlayerGameScenes gameScene, Dictionary<string, object> sceneState) => Rpc("ChangeGameScene", gameScene.ToString(), sceneState);
 	public void SendLobbyState(System.Collections.Generic.IList<Client> clientsToSend, Dictionary<string, object> lobbyState) {
 		foreach(var client in clientsToSend) {
 			RpcId(client.id, "ReciveLobbyState", lobbyState);
 		}
+	}
+	public void DisconnectPlayer(int id) {
+		var clients = GetNode<Clients>("/root/Clients");
+		var disconnectedClient = clients.GetClientByID(id);
+
+		if(disconnectedClient.id != -1) {
+			clients.DestroyClientOnDisconnect(id);
+			if(disconnectedClient.State == Client.ClientState.LOBBY_NOT_READY || disconnectedClient.State == Client.ClientState.LOBBY_READY)
+				EmitSignal(nameof(ClientDisconnectedFromLobby), disconnectedClient.AsGDDict);
+		}
+		GD.Print($"Client disconnected with ${id}");
 	}
 
 #endregion

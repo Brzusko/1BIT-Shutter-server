@@ -8,7 +8,8 @@ namespace bit_shuter_server.Autoload.Structs
             JOINING_WORLD = 2,
             LOBBY_NOT_READY = 3,
             LOBBY_READY = 4,
-            SYNCING = 5,
+            LOADED_WORLD = 5,
+            SYNCING = 6,
         }
         public string ClientName {get; set;}
         public ClientState State {get; set;}

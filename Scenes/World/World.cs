@@ -8,19 +8,25 @@ public class World : Node2D
     private Players _players;
     private Projectiles _projectiles;
 
+    private SpawnPoints _spawnPoints;
+
     public override void _Ready()
     {
         _clients = GetNode<Clients>("/root/Clients");
         _players = GetNode<Players>("Players");
         _projectiles = GetNode<Projectiles>("Projectiles");
+        _spawnPoints = GetNode<SpawnPoints>("SpawnPoints");
     }
 
-    public Godot.Collections.Dictionary<string,object> SendGame()
+    public void CreatePlayer(Vector2 startingPos, string name, bool playerLook) {
+        _players.CreatePlayer(startingPos, name, playerLook);
+    }
+    public Godot.Collections.Dictionary<string,object> WorldState()
     {
         return new  Godot.Collections.Dictionary<string,object>(){
-            {"P",_players.GetSerlizedPlayers()},
-            {"pr",_projectiles.GetSerlizedProjectiles()},
-            {"t",OS.GetTicksMsec()}
+            { "P", _players.GetSerlizedPlayers() },
+            { "pr", _projectiles.GetSerlizedProjectiles() },
+            { "t", OS.GetTicksMsec() }
         };;
     }
 }
