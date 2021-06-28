@@ -35,6 +35,9 @@ public class Network : Node
 			DisconnectPlayer(id);
 			return;
 		}
+
+
+
 		clients.RegisterClient(id);
 		GD.Print($"Client connected with id ${id}");
 	}
@@ -49,8 +52,19 @@ public class Network : Node
 		var credentials = new Credentials {
 			ClientName = (string)creds["ClientName"]
 		};
+
 		clients.SetClientCredentials(credentials, id);
 		GD.Print("Recived Credentials");
+
+		var ClientsInLobby = clients.ClientsInLobby;
+		foreach (var client in ClientsInLobby)
+		{
+			if(client.ClientName ==  credentials.ClientName)
+			{	
+				DisconnectPlayer(id);
+				return;
+			}
+		}
 		StartClientClockSyncing(id);
 	}
 	
@@ -59,6 +73,7 @@ public class Network : Node
 		var clients = GetNode<Clients>("/root/Clients");
 		var id = GetTree().GetRpcSenderId();
 		clients.ClientFinishedClockSync(id);
+		
 		RpcId(id, "ChangeUIScene", PlayerUIScenes.Lobby.ToString());		
 	}
 

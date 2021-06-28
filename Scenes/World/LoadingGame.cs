@@ -21,6 +21,12 @@ public class LoadingGame : Node, IState
     }
 
     public void Tick(float delta) {
+
+		if(_clients.ClientsCount == 0) {
+             EndTransition(nameof(WaitingForConnections));
+             return;
+        }
+
         if (_clients.CanStartSyncing) {
             EndTransition(nameof(Simulating));
         }
