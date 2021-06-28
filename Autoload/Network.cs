@@ -75,6 +75,13 @@ public class Network : Node
 		EmitSignal(nameof(ClientChangeReadyState));
 	}
 
+	[Remote]
+	public void ClientLoadedGameScene() {
+		var id = GetTree().GetRpcSenderId();
+		var clients = GetNode<Clients>("/root/Clients");
+		clients.ClientFinishedLoading(id);
+	}
+
 #region utils
 	public void StartClientClockSyncing(int id) => RpcId(id, "StartClockSync");
 	public void RequestUIChange(PlayerUIScenes uiScene, int id) => RpcId(id, "ChangeUIScene", uiScene.ToString());

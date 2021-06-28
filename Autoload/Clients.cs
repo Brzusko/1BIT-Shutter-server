@@ -21,6 +21,13 @@ public class Clients : Node
         }
     }
 
+    public IList<Client> LoadedClients {
+        get {
+            var clients = _clients.Where(client => client.Value.State == Client.ClientState.LOADED_WORLD).Select(client => client.Value).ToList<Client>();
+            return clients;
+        }
+    }
+
     public bool CanStartSyncing {
         get => _clients.Where(client => client.Value.State == Client.ClientState.LOADED_WORLD).ToArray().Length == _clients.Count;
     }
@@ -73,6 +80,20 @@ public class Clients : Node
         if (!_clients.ContainsKey(id)) return;
         var client = _clients[id];
         client.State = Client.ClientState.JOINING_WORLD;
+        _clients[id] = client;
+    }
+
+    public void ClientFinishedLoading(int id) {
+        if (!_clients.ContainsKey(id)) return;
+        var client = _clients[id];
+        client.State = Client.ClientState.LOADED_WORLD;
+        _clients[id] = client;
+    }
+
+    public void ClientReadyToSync(int id) {
+        if (!_clients.ContainsKey(id)) return;
+        var client = _clients[id];
+        client.State = Client.ClientState.SYNCING;
         _clients[id] = client;
     }
     public Client GetClientByID(int id) => _clients.ContainsKey(id) ? _clients[id] : new Client{ id = -1 };
